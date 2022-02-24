@@ -1,3 +1,3 @@
 FROM apache/superset:latest-dev
 
-RUN pip install sqlalchemy-trino
+RUN pip install sqlalchemy-trino elasticsearch-dbapi
