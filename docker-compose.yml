@@ -38,7 +38,6 @@ services:
       - 8080:8080
   redis:
     image: redis:latest
-    container_name: superset_cache
     restart: unless-stopped
     volumes:
       - redis:/data
@@ -46,7 +45,6 @@ services:
   db:
     env_file: docker/.env-non-dev
     image: postgres:10
-    container_name: superset_db
     restart: unless-stopped
     volumes:
       - db_home:/var/lib/postgresql/data
@@ -56,7 +54,6 @@ services:
     # image: *superset-image
     build: 
       *superset-build
-    container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
     restart: unless-stopped
@@ -73,7 +70,6 @@ services:
     # image: *superset-image
     build: 
       *superset-build
-    container_name: superset_init
     command: ["/app/docker/docker-init.sh"]
     env_file: docker/.env-non-dev
     depends_on: *superset-depends-on
@@ -86,7 +82,6 @@ services:
     # image: *superset-image
     build: 
       *superset-build
-    container_name: superset_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file: docker/.env-non-dev
     restart: unless-stopped
@@ -100,7 +95,6 @@ services:
     # image: *superset-image
     build: 
       *superset-build
-    container_name: superset_worker_beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file: docker/.env-non-dev
     restart: unless-stopped
@@ -109,19 +103,31 @@ services:
     healthcheck:
       disable: true
     volumes: *superset-volumes
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+  #   environment:
+  #     - "ES_JAVA_OPTS=-Xms1024m -Xmx2g"
+  #     - discovery.type=single-node
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   volumes:
+  #     - elasticsearch_data:/usr/share/elasticsearch/data
+  #   ports:
+  #     - 9200:9200 
+  
+  mongo:
+    image: mongo
+    restart: unless-stopped
     environment:
-      - "ES_JAVA_OPTS=-Xms1024m -Xmx2g"
-      - discovery.type=single-node
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      MONGO_INITDB_DATABASE: mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
-      - 9200:9200 
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
 
 volumes:
   superset_home:
@@ -132,3 +138,5 @@ volumes:
     external: false
   elasticsearch_data:
     external: false
+  mongo_data:
+    external: true
