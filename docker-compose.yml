@@ -36,6 +36,8 @@ services:
       dockerfile: trino.Dockerfile
     ports:
       - 8080:8080
+    volumes:
+      - hive_metastore:/etc/hive_metastore
   redis:
     image: redis:latest
     restart: unless-stopped
@@ -139,4 +141,6 @@ volumes:
   elasticsearch_data:
     external: false
   mongo_data:
+    external: false
+  hive_metastore:
     external: false

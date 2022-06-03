@@ -13,7 +13,8 @@ RUN tar -xf /opt/trino-server.tar.gz -C /opt && rm -f /opt/trino-server.tar.gz &
 ADD https://repo1.maven.org/maven2/io/trino/trino-cli/382/trino-cli-382-executable.jar /usr/bin/trino
 RUN useradd -m trino && \
     chmod a+x /opt/trino/bin/launcher /usr/bin/trino && \
-    mkdir -p /var/trino/data/ && chown -R trino /var/trino /usr/bin/trino && chmod -R o+rwx /var/trino &&\
+    mkdir -p /var/trino/data/ && chown -R trino /var/trino /usr/bin/trino && chmod -R o+rwx /var/trino && \
+    mkdir /etc/hive_metastore && chown -R trino /etc/hive_metastore && \
     curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.2.0/hadoop-common-3.2.0.jar -o /opt/trino/plugin/hive/hadoop-common-3.2.0.jar && \
     curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.2.0/hadoop-aws-3.2.0.jar -o /opt/trino/plugin/hive/hadoop-aws-3.2.0.jar && \
     curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.230/aws-java-sdk-bundle-1.12.230.jar -o /opt/trino/plugin/hive/aws-java-sdk-bundle-1.12.230.jar
